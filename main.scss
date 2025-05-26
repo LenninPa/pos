@@ -1,0 +1,2451 @@
+// Variables
+$primary: white;
+$secondary: #202C5F; // Verde brillante
+$terciary: #1B1A1A;
+$danger: #FF2A2A; // Rojo brillante 
+$tableHeader: #FF2A2A; // Color rojo para el encabezado de la tabla
+$exit: #00D71E;
+$fontstandar: .95em;
+$font-global: "Helvetica";
+$font-color: #000000;
+$timeg: .1s;
+
+@mixin buttons{
+  transition: $timeg;
+  padding: 1em;
+  height: 100%;
+  border-radius: .2em;
+  &:hover {
+        transition: $timeg;
+        background: $secondary;
+        color: white;
+      }
+}
+
+@mixin degradate{
+  background: linear-gradient(100deg, $terciary 50%, white);
+}
+
+/************************************************************/
+// Reset y estilos globales
+*, a, ul, li {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+  text-decoration: none;
+  color: $font-color;
+  cursor: default;
+  font-size: $fontstandar;
+  font-family: $font-global;
+  font-weight: thin;
+}
+
+button {
+  all: unset;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+  position: relative;
+  background: $primary;
+  /**************************************/
+
+  // Variables
+
+
+
+
+// Variables adicionales para el modal
+$border-color: #ddd;
+$selected-bg: #e0f0ff;
+$hover-bg: #f0f8ff;
+
+
+
+@mixin buttons{
+  transition: $timeg;
+  padding: 1em;
+  height: 100%;
+  border-radius: .2em;
+  &:hover {
+        transition: $timeg;
+        background: $secondary;
+        color: white;
+      }
+}
+
+@mixin degradate{
+  background: linear-gradient(100deg, $terciary 50%, white);
+}
+
+/**************************************************/
+@mixin table-cell {
+  padding: 1em;
+  border: 1px solid #ddd;
+  font-family: $font-global, sans-serif;
+  color: $font-color;
+}
+
+@mixin modal-position {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin full-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+/*******************************************************************/
+// No se vuelven a declarar las variables, solo se usan.
+
+.customer-modal {
+    display: none; // Oculto por defecto, se controla con JS
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    font-family: $font-global;
+    font-size: $fontstandar;
+
+    .customer-modal-content {
+        background-color: $primary;
+        margin: 5% auto;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        width: 90%;
+        max-width: 1100px;
+        display: flex;
+        flex-direction: column;
+        min-height: 600px;
+        max-height: 90vh;
+    }
+
+    .customer-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 20px;
+
+        h2 {
+            color: $secondary;
+            margin: 0;
+            font-size: 1.6em;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color $timeg ease;
+
+            &:hover,
+            &:focus {
+                color: $terciary;
+            }
+        }
+    }
+
+    .customer-modal-body {
+        display: flex;
+        flex-grow: 1;
+        gap: 25px;
+        overflow: hidden;
+
+        .customers-list-panel {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #eee;
+            padding-right: 25px;
+            overflow: hidden; // Para que el scroll esté dentro del list-container
+
+            .customer-search-container {
+                display: flex;
+                margin-bottom: 15px;
+
+                .customer-search-input {
+                    flex-grow: 1;
+                    padding: 10px 15px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px 0 0 5px;
+                    font-size: $fontstandar;
+                    &:focus {
+                        outline: none;
+                        border-color: $secondary;
+                    }
+                }
+
+                .customer-search-btn {
+                    background-color: $secondary;
+                    color: $primary;
+                    border: 1px solid $secondary;
+                    padding: 10px 15px;
+                    border-radius: 0 5px 5px 0;
+                    cursor: pointer;
+                    transition: background-color $timeg ease, color $timeg ease;
+
+                    &:hover {
+                        background-color: lighten($secondary, 10%);
+                    }
+                }
+            }
+
+            .new-customer-btn {
+                background-color: $exit;
+                color: $primary;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: $fontstandar;
+                margin-bottom: 15px;
+                transition: background-color $timeg ease;
+
+                &:hover {
+                    background-color: darken($exit, 10%);
+                }
+            }
+
+            .customers-count {
+                font-size: 0.85em;
+                color: #777;
+                margin-bottom: 10px;
+                padding-left: 5px;
+            }
+
+            .customers-list-container {
+                flex-grow: 1;
+                overflow-y: auto;
+                padding-right: 10px; // Espacio para la barra de scroll
+
+                .customers-list {
+                    .loading-message,
+                    .no-customers-message {
+                        text-align: center;
+                        padding: 20px;
+                        color: #666;
+
+                        .loading-spinner {
+                            border: 4px solid #f3f3f3;
+                            border-top: 4px solid $secondary;
+                            border-radius: 50%;
+                            width: 30px;
+                            height: 30px;
+                            animation: spin 1s linear infinite;
+                            margin: 0 auto 10px auto;
+                        }
+
+                        .no-results-icon {
+                            font-size: 3em;
+                            margin-bottom: 10px;
+                        }
+                    }
+
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+
+                    // Estilos para cada item de cliente (usando la plantilla)
+                    .customer-item {
+                        padding: 12px 15px;
+                        border-bottom: 1px solid #eee;
+                        cursor: pointer;
+                        transition: background-color $timeg ease;
+                        border-radius: 5px;
+                        margin-bottom: 5px;
+
+                        &:hover {
+                            background-color: #f5f5f5;
+                        }
+
+                        &.selected {
+                            background-color: lighten($secondary, 60%);
+                            border-left: 4px solid $secondary;
+                            padding-left: 11px;
+                        }
+
+                        .customer-name {
+                            font-weight: bold;
+                            color: $terciary;
+                            margin-bottom: 5px;
+                        }
+
+                        .customer-contact,
+                        .customer-email {
+                            display: flex;
+                            align-items: center;
+                            font-size: 0.85em;
+                            color: #555;
+                            margin-bottom: 3px;
+
+                            .contact-icon,
+                            .email-icon {
+                                margin-right: 5px;
+                                color: $secondary;
+                            }
+                        }
+
+                        .customer-type {
+                            font-size: 0.75em;
+                            color: #888;
+                            margin-top: 5px;
+                            padding: 2px 6px;
+                            background-color: #e0e0e0;
+                            border-radius: 3px;
+                            display: inline-block;
+                        }
+                    }
+                }
+            }
+        }
+
+        .customer-details-panel {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            padding-left: 25px;
+
+            h3 {
+                color: $secondary;
+                margin-top: 0;
+                margin-bottom: 20px;
+                font-size: 1.4em;
+            }
+
+            .customer-details-container {
+                flex-grow: 1;
+                background-color: #f9f9f9;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                padding: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                overflow-y: auto;
+
+                .customer-details-content {
+                    width: 100%;
+
+                    &.empty-state {
+                        .customer-icon {
+                            font-size: 4em;
+                            color: #ccc;
+                            margin-bottom: 15px;
+                        }
+
+                        .select-customer-message {
+                            color: #777;
+                            line-height: 1.5;
+                        }
+                    }
+
+                    .loading-message {
+                        .loading-spinner {
+                            border: 4px solid #f3f3f3;
+                            border-top: 4px solid $secondary;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            animation: spin 1s linear infinite;
+                            margin: 0 auto 15px auto;
+                        }
+                        p {
+                            color: #666;
+                        }
+                    }
+
+                    // Estilos para los detalles del cliente (usando la plantilla)
+                    .customer-details-info {
+                        text-align: left;
+                        color: $font-color;
+
+                        .customer-header {
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 20px;
+                            padding-bottom: 15px;
+                            border-bottom: 1px solid #eee;
+
+                            .customer-avatar {
+                                width: 60px;
+                                height: 60px;
+                                background-color: $secondary;
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: $primary;
+                                font-size: 1.8em;
+                                font-weight: bold;
+                                margin-right: 15px;
+                                flex-shrink: 0;
+                            }
+
+                            .customer-main-name {
+                                font-size: 1.8em;
+                                font-weight: bold;
+                                color: $terciary;
+                                line-height: 1.2;
+                            }
+
+                            .customer-type-detail {
+                                margin-left: auto;
+                                padding: 5px 10px;
+                                background-color: #e0e0e0;
+                                border-radius: 4px;
+                                font-size: 0.8em;
+                                color: #555;
+                            }
+                        }
+
+                        .details-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                            gap: 15px 25px;
+
+                            div {
+                                .detail-label {
+                                    font-weight: bold;
+                                    color: #555;
+                                    margin-bottom: 5px;
+                                    display: block;
+                                }
+                                .detail-value {
+                                    color: $font-color;
+                                    word-wrap: break-word;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .customer-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        margin-top: 20px;
+        gap: 10px;
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: $fontstandar;
+            transition: background-color $timeg ease, color $timeg ease;
+
+            &.btn-cancel {
+                background-color: #ccc;
+                color: $terciary;
+
+                &:hover {
+                    background-color: darken(#ccc, 10%);
+                }
+            }
+
+            &.btn-assign {
+                background-color: $secondary;
+                color: $primary;
+
+                &:hover:not(:disabled) {
+                    background-color: lighten($secondary, 10%);
+                }
+
+                &:disabled {
+                    background-color: #e0e0e0;
+                    color: #a0a0a0;
+                    cursor: not-allowed;
+                }
+            }
+        }
+    }
+}
+
+// Estilos de la plantilla de cliente (ya definida en el HTML pero se estila aquí)
+#customer_item_template {
+    // Ya está estilizada dentro de .customers-list .customer-item
+}
+
+// Estilos de la plantilla de detalles (ya definida en el HTML pero se estila aquí)
+#customer_details_template {
+    // Ya está estilizada dentro de .customer-details-content .customer-details-info
+}
+/*******************************************************************/
+// Overlay de fondo
+.search-overlay {
+  @include full-overlay;
+  background-color: rgba($terciary, 0.7);
+  z-index: 999;
+}
+
+// Modal principal
+.search-results-modal {
+  @include modal-position;
+  background-color: $primary;
+  padding: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  max-height: 80vh;
+  overflow: auto;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+  border: 2px solid $secondary;
+  font-family: $font-global, sans-serif;
+  color: $font-color;
+
+  // Encabezado del modal
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid $secondary;
+
+    .modal-title {
+      margin: 0;
+      color: $secondary;
+      font-family: $font-global, sans-serif;
+      font-size: 1.8em;
+    }
+
+    .close-btn {
+      background: $danger;
+      color: $primary;
+      border: none;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      font-family: $font-global, sans-serif;
+      transition: $timeg;
+
+      &:hover {
+        background: darken($danger, 10%);
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  // Contenedor de la tabla
+  .table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid $secondary;
+    border-radius: .2em;
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: $font-global, sans-serif;
+      font-size: $fontstandar;
+
+      // Encabezado de la tabla
+      thead {
+        tr {
+          background-color: $tableHeader;
+          color: $primary;
+          position: sticky;
+          top: 0;
+
+          th {
+            @include table-cell;
+            font-family: $font-global, sans-serif;
+            color: $primary;
+            font-size: 1.5em;
+
+            &.text-left { 
+              text-align: left; 
+            }
+            &.text-right { 
+              text-align: right; 
+            }
+            &.text-center { 
+              text-align: center; 
+            }
+          }
+        }
+      }
+
+      // Cuerpo de la tabla
+      tbody {
+        tr {
+          transition: $timeg;
+          cursor: pointer;
+          font-size: 1.5em;
+
+          &:nth-child(even) {
+            background-color: $primary;
+          }
+
+          &:nth-child(odd) {
+            background-color: #f8f9fa;
+          }
+
+          &:hover {
+            background-color: #e8f4f3 !important;
+            transition: $timeg;
+          }
+
+          td {
+            @include table-cell;
+
+            &.code-cell {
+              font-family: monospace;
+            }
+
+            &.product-cell {
+              font-weight: 500;
+            }
+
+            &.price-cell {
+              text-align: right;
+              font-weight: bold;
+              color: $secondary;
+            }
+
+            &.stock-cell {
+              text-align: center;
+              font-weight: bold;
+
+              &.stock-available {
+                color: $exit;
+              }
+
+              &.stock-unavailable {
+                color: $danger;
+              }
+
+              &.stock-unlimited {
+                color: $secondary;
+              }
+            }
+
+            &.action-cell {
+              text-align: center;
+
+              .add-btn {
+                @include buttons;
+                border: none;
+                cursor: pointer;
+                font-weight: bold;
+                font-family: $font-global, sans-serif;
+                font-size: $fontstandar;
+                color: $primary;
+                background-color: $secondary;
+
+                &:disabled {
+                  background-color: $terciary;
+                  cursor: not-allowed;
+                  
+                  &:hover {
+                    background-color: $terciary;
+                    color: $primary;
+                    transform: none;
+                  }
+                }
+
+                &:not(:disabled):hover {
+                  transform: scale(1.05);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Clases de utilidad
+.text-left { 
+  text-align: left; 
+}
+
+.text-right { 
+  text-align: right; 
+}
+
+.text-center { 
+  text-align: center; 
+}
+/**************************************************/
+
+.modal_history {
+    z-index: 100;
+    position: fixed; // Cambié de absolute a fixed para mejor control
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: $font-global;
+    font-size: 1.5em;
+    color: $font-color;
+    
+    .modal-content_sales-history-modal {
+        display: flex;
+        flex-direction: column;
+        width: 1200px; // Ancho fijo
+        height: 800px; // Alto fijo
+        max-width: 95vw; // Máximo para dispositivos pequeños
+        max-height: 95vh; // Máximo para dispositivos pequeños
+        background-color: $primary;
+        border: 2px solid $terciary;
+        box-shadow: 5px 10px 15px black;
+        overflow: hidden; // Previene desbordamiento
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5em 1em;
+        background-color: $secondary;
+        flex-shrink: 0; // No se reduce
+        min-height: 60px; // Alto mínimo fijo
+        
+        h2 {
+            margin: 0;
+            color: white;
+        }
+        
+        .close {
+            cursor: pointer;
+            font-size: 1em;
+            color: white;
+        }
+    }
+    
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        padding: 1em;
+        flex: 1; // Toma el espacio restante
+        overflow: hidden; // Previene desbordamiento
+        
+        .sales-history-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1em;
+            flex-shrink: 0; // No se reduce
+            min-height: 120px; // Alto mínimo fijo
+            
+            .search-ticket-container,
+            .selected-ticket-info {
+                width: 48%;
+                padding: .5em;
+                background: $primary;
+                
+                h3 {
+                    margin-top: 0;
+                    margin-bottom: 0.5em;
+                }
+                
+                input {
+                    width: 100%;
+                    padding: 0.5em;
+                    margin-bottom: 0.5em;
+                    box-sizing: border-box;
+                }
+                
+                button {
+                    padding: 0.5em 1em;
+                    background-color: $secondary;
+                    color: $primary;
+                    border: none;
+                    cursor: pointer;
+                }
+            }
+        }
+        
+        .sales-history-middle {
+            display: flex;
+            gap: 1em;
+            margin-bottom: 1em;
+            flex: 1; // Toma el espacio restante disponible
+            min-height: 0; // Permite reducción si es necesario
+            
+            .sales-list-container,
+            .sale-details-container {
+                flex: 1;
+                border: 2px solid $terciary;
+                padding: 0.5em;
+                background: $primary;
+                display: flex;
+                flex-direction: column;
+                min-height: 0; // Permite reducción si es necesario
+                
+                h3 {
+                    margin-top: 0;
+                    margin-bottom: 0.5em;
+                    flex-shrink: 0; // No se reduce
+                }
+                
+                .sales-list-wrapper,
+                .sale-details-wrapper {
+                    flex: 1; // Toma el espacio restante
+                    overflow-y: auto;
+                    min-height: 200px; // Alto mínimo para las tablas
+                    
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        
+                        th {
+                            background-color: $secondary;
+                            color: $primary;
+                            padding: 0.5em;
+                            border-bottom: 2px solid $terciary;
+                            position: sticky;
+                            top: 0;
+                            z-index: 1;
+                        }
+                        
+                        td {
+                            padding: 0.5em;
+                            border-bottom: 1px solid $border-color;
+                        }
+                        
+                        tbody tr:hover {
+                            background-color: $hover-bg;
+                        }
+                        
+                        tbody tr.selected {
+                            background-color: $secondary;
+                            color: $primary;
+                        }
+                        
+                        tbody tr.sale-cancelled {
+                            background-color: #dc3545 !important;
+                            color: white !important;
+                            text-decoration: line-through;
+                        }
+                    }
+                }
+            }
+        }
+        
+        .sales-history-bottom {
+            display: flex;
+            justify-content: space-between;
+            gap: 1em;
+            flex-shrink: 0; // No se reduce
+            min-height: 180px; // Alto mínimo fijo
+            
+            .search-by-date-container,
+            .sale-actions-container {
+                width: 48%;
+                border: 2px solid $terciary;
+                padding: 1em;
+                background: $primary;
+                box-sizing: border-box;
+                
+                h3 {
+                    margin-top: 0;
+                    margin-bottom: 0.5em;
+                    color: white;
+                }
+                
+                input[type="date"] {
+                    width: 100%;
+                    padding: 0.5em;
+                    margin-bottom: 0.5em;
+                    box-sizing: border-box;
+                }
+                
+                button {
+                    padding: 0.5em 1em;
+                    background-color: $secondary;
+                    color: $primary;
+                    border: none;
+                    cursor: pointer;
+                    
+                    &:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
+                }
+                
+                .btn-danger {
+                    background-color: $danger;
+                }
+                
+                .btn-primary {
+                    background-color: $secondary;
+                }
+                
+                .sale-summary {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 1em;
+                    
+                    .ticket-name,
+                    .ticket-total {
+                        color: white;
+                        
+                        label {
+                            font-weight: bold;
+                        }
+                        
+                        span {
+                            margin-left: 0.5em;
+                            color: white;
+                        }
+                    }
+                }
+                
+                .action-buttons {
+                    display: flex;
+                    gap: 0.5em;
+                    flex-wrap: wrap;
+                }
+            }
+        }
+    }
+}
+
+// Estilos adicionales para información de cancelación
+#cancel-info {
+    background: #fff3cd !important;
+    border: 1px solid #ffeaa7 !important;
+    padding: 8px !important;
+    margin-bottom: 8px !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+    color: #856404 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+  /************************************/
+  // Estilos para el modal de pago
+.modal {
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: white;
+  display: flex;
+  .modal-content {
+    background-color: $primary;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px $secondary;
+    width: 40%;
+
+    
+    .modal-header {
+      background-color: $secondary;
+      color: white;
+      padding: 10px 20px;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      h2{
+        color: white;
+      }
+      .close {
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        
+        &:hover {
+          color: #f0f0f0;
+        }
+      }
+    }
+    
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        label {
+            width: 50%;
+          display: block;
+          margin-bottom: 5px;
+          font-weight: bold;
+          font-size: 1.8em;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+          width: 50%;
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 16px;
+          
+          &[readonly] {
+            background-color: #f5f5f5;
+          }
+        }
+      }
+      
+      .buttons-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+        
+        button {
+          border: none;
+          padding: 10px 15px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          font-size: 1.8em;
+          
+          &.btn-cancel {
+            background-color: #FF2A2A;
+            color: white;
+            
+            &:hover {
+              background-color: darken(#FF2A2A, 10%);
+            }
+          }
+          
+          &.btn-process {
+            background-color: #29867E;
+            color: white;
+            
+            &:hover {
+              background-color: darken(#29867E, 10%);
+            }
+          }
+          
+          &.btn-print {
+            background-color: #1565C0;
+            color: white;
+            
+            &:hover {
+              background-color: darken(#1565C0, 10%);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animación para la entrada del modal
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal[style*="display: flex"] {
+  animation: fadeIn 0.3s;
+  text-align: center;
+}
+
+// Estados especiales
+#payment_amount {
+  &.valid {
+    background-color: #e8f5e9;
+    border-color: #2e7d32;
+  }
+  
+  &.invalid {
+    background-color: #ffebee;
+    border-color: #c62828;
+  }
+}
+
+#payment_change {
+  &.positive {
+    color: #2e7d32;
+    font-weight: bold;
+  }
+  
+  &.negative {
+    color: #c62828;
+    font-weight: bold;
+  }
+}
+
+  // Estilos para el modal de productos a granel
+#bulkProductModal {
+
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    marging: auto;
+    overflow: auto; 
+
+    background: transparent; 
+
+
+    .modal-content {
+        background-color: $primary;
+        margin: 15% auto; 
+        padding: 20px;
+        border: 1px solid #888;
+        width: 40%; 
+
+        .close-button {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+
+            &:hover,
+            &:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        }
+
+        h2 {
+            margin-top: 0;
+            color: white;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: white;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: $secondary;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover {
+                background: lighten($secondary, 25%);
+            }
+        }
+    }
+}
+
+
+}
+/************************************************************/
+// Header
+.header {
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  align-content: center;
+  align-items: center;
+  background: $terciary;
+  
+  .header_nav {
+    display: flex;
+
+    
+    .header_nav_bttns {
+      @include buttons;
+
+      
+      
+
+      
+      a {
+        color: white;
+      }
+      
+
+    }
+  }
+  
+  .utilities {
+
+    display: flex;
+    height: 100%;
+    justify-content: flex-end;
+
+    margin-left: auto;
+    
+    .user {
+      height: 100%;
+      color: white;
+      padding: 1em;
+    }
+    
+    .time {
+      width: 100%;
+      padding: 1em;
+      height: 100%;
+      color: white;
+
+      
+      span {
+        height: 100%;
+        color: white;
+      }
+    }
+    
+    .header_nav_bttns {
+
+     @include buttons;
+      
+      &:hover {
+        transition: $timeg;
+        background: $secondary;
+      }
+      a{
+        color: white;
+      }
+    }
+  }
+}
+
+
+/*******************************************/
+.main_bar{
+  width: 100%;
+  display: flex;
+  background: $terciary;
+  .main_form{
+    width: 50%;
+    display: flex;
+    
+    .main_input{
+
+      all: unset; // Resetea todos los estilos
+      
+      // Ocupar todo el espacio disponible
+      width: 50%; // Cambiado de 'inherit' a '100%'
+      flex: 1; // Hace que ocupe todo el espacio disponible en un display flex
+      
+      // Estilos visuales
+      padding: 1em;
+      color: white;
+      background: lighten($terciary,15%);
+      
+      // Eliminar estilos del navegador
+      border: none;
+      outline: none;
+      
+      // Eliminar efectos de foco
+      &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+      
+      // Eliminar estilos para autocompletado
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus {
+        -webkit-text-fill-color: white;
+        -webkit-box-shadow: 0 0 0px 1000px lighten($terciary,15%) inset;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+      
+      // Eliminar apariencias específicas de navegadores
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    
+    .main_input_submit{
+
+      all: unset;
+
+      @include buttons;
+      padding: 0 1em;
+      color: white;
+
+      background: $secondary;
+      &:hover{
+        transition: .2s;
+        background: darken($secondary,25%);
+      }
+      // Estilos para el botón de envío si los necesitas
+    }
+  }  
+}
+
+.main_options{
+  background: $terciary;
+  width: 100%;
+  display: flex;
+  background: $terciary;
+  .main_options_bttns{
+    @include buttons;
+    color: white;
+    padding: 1em;
+    text-align: left;
+    font-size: .8em;
+  }  
+}
+/************************************************////
+.main{  
+  position: relative;
+
+
+
+
+
+/*////////*****************************************/
+.modal_confirm {
+  position: fixed;
+  width: 400px;
+  background: $terciary;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  padding: 25px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: white;
+  
+  /* Contenedor para "Paga con:" */
+  .modal_confirm_pre {
+    width: 100%;
+    
+    .modal_confirm_pre_m {
+      color: white;
+      margin-bottom: 10px;
+      display: block;
+      
+      &[type="text"] {
+        width: 100%;
+        padding: 12px;
+        background: #333;
+        border: 1px solid #555;
+        border-radius: 4px;
+        color: white;
+        font-size: 1.2em;
+        text-align: right;
+      }
+    }
+  }
+  
+  /* Contenedor para opciones de pago */
+  .payment_options {
+    width: 100%;
+    
+    .payment_options_title {
+      color: white;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+    
+    .payment_option {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 10px;
+        cursor: pointer;
+        /* Estilo personalizado para el radio button */
+        appearance: none;
+        -webkit-appearance: none;
+        border: 1px solid $secondary;
+        border-radius: 50%; /* Hacerlo circular para radio button */
+        position: relative;
+        
+        &:checked {
+          background-color: #333;
+          border: 1px solid $secondary;
+          
+          &:after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: $secondary;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+          }
+        }
+        
+        &:hover {
+          border-color: lighten($secondary, 10%);
+        }
+      }
+      
+      label {
+        font-size: 1em;
+        cursor: pointer;
+        user-select: none;
+        color: white;
+        &:hover {
+          color: lighten($secondary, 15%);
+        }
+      }
+    }
+    
+    /* Estilos para el campo de número de tarjeta */
+    .tarjeta_input_container {
+      margin-top: 12px;
+      padding: 12px;
+      background-color: lighten($terciary, 5%);
+      border-radius: 4px;
+      border-left: 3px solid $secondary;
+      
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: white;
+      }
+      
+      input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid lighten($terciary, 20%);
+        border-radius: 4px;
+        background-color: lighten($terciary, 10%);
+        color: white;
+        font-size: 1.1em;
+        
+        &:focus {
+          border-color: $secondary;
+          outline: none;
+        }
+        
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.5);
+        }
+      }
+      
+      /* Nota de desarrollo */
+      .dev_note {
+        margin-top: 8px;
+        font-size: 0.8em;
+        color: #ff9800;
+        font-style: italic;
+        text-align: right;
+      }
+    }
+  }
+  
+  /* Contenedor para "Su cambio:" */
+  .total_confirm_change {
+    width: 100%;
+    
+    .total_confirm_ch {
+      color: white;
+      margin-bottom: 10px;
+      display: block;
+      
+      /* El div que muestra el valor del cambio */
+      &:last-child {
+        width: 100%;
+        padding: 12px;
+        border-radius: 4px;
+        font-size: 1.5em;
+        text-align: right;
+        font-size: xxx-large;
+      }
+    }
+  }
+  
+  /* Contenedor para los botones */
+  .modal_confirm_buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    
+    .buttons {
+      padding: 12px 15px;
+      background: $secondary;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+      
+      &:hover {
+        background: darken($secondary, 10%);
+      }
+    }
+  }
+}
+/*//////////*************************************/
+
+.modal_multiple_items {
+    position: fixed;
+    width: 400px;
+    background: $terciary; // Color de fondo oscuro
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 8px;
+    padding: 25px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    
+    // Título del modal
+    .modal_multiple_items_title {
+        width: 100%;
+        text-align: center;
+        
+        h3 {
+            color: white;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+    }
+    
+    // Contenedor del formulario
+    .multiple_items_form {
+        width: 100%;
+        
+        .form_group {
+            margin-bottom: 15px;
+            
+            label {
+                display: block;
+                color: white;
+                margin-bottom: 8px;
+                font-size: 1em;
+            }
+            
+            input[type="text"],
+            input[type="number"] {
+                width: 100%;
+                padding: 12px;
+                background: lighten($terciary, 15%);
+                border: 1px solid lighten($terciary, 25%);
+                border-radius: 4px;
+                color: white;
+                font-size: 1.1em;
+                
+                &:focus {
+                    outline: none;
+                    border-color: $secondary;
+                    box-shadow: 0 0 0 2px rgba($secondary, 0.3);
+                }
+                
+                &::placeholder {
+                    color: darken(white, 30%);
+                }
+            }
+            
+            // Estilos específicos para el campo de cantidad
+            input[type="number"] {
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.2em;
+                
+                // Quitar flechas de incremento/decremento en navegadores
+                &::-webkit-inner-spin-button,
+                &::-webkit-outer-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+                &[type=number] {
+                    -moz-appearance: textfield; // Firefox
+                }
+            }
+        }
+    }
+    
+    // Contenedor de botones
+    .modal_multiple_items_buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        
+        .buttons {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            
+            &:first-child {
+                background: $secondary; // Verde para Aceptar
+                flex: 1;
+                margin-right: 10px;
+                
+                &:hover {
+                    background: darken($secondary, 10%);
+                }
+            }
+            
+            &:last-child {
+                background: $danger; // Rojo para Cancelar
+                flex: 1;
+                margin-left: 10px;
+                
+                &:hover {
+                    background: darken($danger, 10%);
+                }
+            }
+        }
+    }
+}
+
+// Overlay (fondo oscuro detrás del modal)
+.modal_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+/***********************************************************************/
+.modal_bulk_product {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px;
+    background: $terciary;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 20px;
+
+    
+    &_title {
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid $secondary;
+        padding-bottom: 10px;
+        color: white;
+        h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.5em;
+        }
+    }
+    
+    &_buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        
+        .buttons {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+    }
+}
+
+  .bulk_product_form {
+    margin-bottom: 20px;
+    
+    .form_group {
+        margin-bottom: 15px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: white;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1em;
+        box-sizing: border-box;
+        
+        &:focus {
+            outline: none;
+            border-color: $secondary;
+            box-shadow: 0 0 5px rgba(255, 42, 42, 0.3);
+        }
+    }
+}
+
+#btn_bulk_product_accept {
+    background-color: $secondary;
+    color: white;
+    
+    &:hover {
+        background-color: darken($secondary, 10%);
+        transform: translateY(-2px);
+    }
+}
+
+#btn_bulk_product_cancel {
+    background-color: $danger;
+    color: white;
+    
+    &:hover {
+        background-color: darken($danger, 5%);
+        transform: translateY(-2px);
+    }
+}
+
+
+/*******************************************************************/
+/* Estilos personalizados para integrar con el diseño existente */
+
+/* Corregir las clases para que funcionen con el sistema de tickets */
+
+.ticket_bar {
+  width: 100%;
+  display: flex;
+  background: $terciary; /* $terciary */
+  padding: 0; /* Eliminar padding del contenedor */
+  align-items: center;
+  overflow: hidden;
+}
+
+.tickets {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0; /* Eliminar espacio entre tickets */
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  -ms-overflow-style: none;
+  white-space: nowrap;
+  
+  /* Estilizar scrollbar para Chrome/Safari/Edge */
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #29867E;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #35a79c;
+    }
+  }
+}
+
+.ticket_child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.1em;
+  min-width: 120px;
+  max-width: 180px;
+  padding: 8px 12px;
+  color: white;
+  background-color: darken($secondary,15%); /* darken($secondary, 15%) */
+  border-radius: 0; /* Eliminar bordes redondeados */
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin: 0; /* Eliminar margen */
+  border-right: 1px solid rgba(0,0,0,0.2); /* Agregar separador sutil */
+  
+  /* Tickets normales con opacidad reducida */
+  opacity: 0.8;
+  
+  /* Efecto hover mejorado */
+  &:hover {
+    background-color: lighten($secondary, 15%); /* lighten($secondary, 5%) */
+    opacity: 0.95;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 2; /* Asegurar que aparezca por encima de otros tickets al elevarse */
+  }
+}
+
+/* Estilo para el ticket activo */
+.active { background-color: $secondary; /* $secondary */ font-weight: bold;
+ box-shadow: inset 0 -3px 0 rgba(255,255,255,0.7); /* Indicador en la parte
+ inferior en lugar de borde completo */ opacity: 1 !important; /*
+ Completamente opaco */ z-index: 1; /* Aparecer por encima de tickets
+ inactivos */
+  
+  &:hover {
+    background-color: $secondary;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  
+  /* Contador de productos en ticket activo */
+  .product-count {
+    background-color: white;
+    color: red; /* $secondary */
+  }
+}
+
+/* Contador de productos */
+.product-count {
+  background-color: #ff6b6b;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.8em;
+  margin-left: 4px; /* Reducir margen */
+  min-width: 18px;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+/* Botón eliminar ticket */
+.delete-ticket-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 2px; /* Reducir padding */
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  line-height: 1;
+  display: inline-block;
+  margin-left: 2px; /* Añadir pequeño margen */
+  
+  &:hover {
+    opacity: 1;
+    color: $danger; /* $danger */
+    transform: scale(1.2);
+  }
+}
+
+/* Botón añadir ticket */
+.add_ticket {
+  font-weight: bold;
+  font-size: 1.2em;
+  background: #35a79c; /* lighten($secondary, 15%) */
+
+  color: white;
+  border: none;
+  border-radius: 0; /* Eliminar bordes redondeados */
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 100%; /* Asegurar misma altura que los tickets */
+  
+  &:hover {
+    background-color: #29867E; /* $secondary */
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+}
+
+/***********************************/
+  
+.table {
+  width: 100%;
+  overflow-y: auto;
+  position: relative;
+
+  .table_display_header {
+    width: 100%;
+    display: flex;
+    font-size: x-small;
+    padding: 0; // Quitar padding para que coincida con la imagen
+    position: sticky; // Hace que el encabezado sea sticky
+    top: 0; // Se queda pegado en la parte superior
+    z-index: 10; // Asegura que esté por encima de otros elementos
+    background: $secondary; // Cambiado a rojo usando la variable $danger
+    .table_display_header_options {
+      color: white;
+
+      text-align: left;
+      padding: 8px 10px;
+      position: relative; // Para posicionar el resizer
+      user-select: none; // Impide selección de texto durante el resize
+      border-right: 1px solid darken($secondary, 10%); // Separador adaptado al nuevo color
+      font-size: 1.2em;
+      // Añadimos el resizer
+      .column-resizer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 5px;
+        height: 100%;
+        background-color: rgba(0,0,0,0.1);
+        cursor: col-resize;
+        z-index: 20;
+        
+        &:hover, &.resizing {
+          background-color: rgba(0,0,0,0.3);
+        }
+      }
+    }
+  }
+  
+  .display_table {
+    width: 100%;
+    
+    .display_table_form {
+      width: 100%;
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; // Importante para controlar anchos de columna
+        
+        .table_form_body {
+          width: 100%;
+          
+          .table_form_row {
+            display: flex;
+            width: 100%;
+            border-bottom: 1px solid #e0e0e0; // Añadir línea separadora
+            
+            .table_form_row_data {
+              font-size: 1.2em;
+              padding: 8px 10px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              border-right: 1px solid #e0e0e0; // Añadir separador vertical
+            }
+          }
+        }
+      }
+    }
+  }  
+
+
+
+}
+/* Estilo para el ticket activo */
+.active {
+  background-color: #29867E !important; /* $secondary */
+  font-weight: bold;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.7); /* Borde blanco para resaltar */
+  opacity: 1 !important; /* Completamente opaco */
+  
+  &:hover {
+    background-color: #3ab3a8 !important; /* Version más clara */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+  
+  /* Contador de productos en ticket activo */
+  .product-count {
+    background-color: white;
+    color: #29867E; /* $secondary */
+  }
+}
+
+/* Contador de productos */
+.product-count {
+  background-color: #ff6b6b;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.8em;
+  margin-left: 8px;
+  min-width: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+/* Efecto hover en el contador */
+.ticket_child:hover:not(.active) .product-count {
+  transform: scale(1.1);
+}
+
+/* Botón eliminar ticket */
+.delete-ticket-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 5px;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  line-height: 1;
+  display: inline-block;
+  
+  &:hover {
+    opacity: 1;
+    color: #FF2A2A; /* $danger */
+    transform: scale(1.2);
+  }
+}
+
+/* Botón eliminar más visible en hover */
+.ticket_child:hover .delete-ticket-btn {
+  opacity: 1;
+}
+
+/* Botón añadir ticket */
+.add_ticket {
+  font-weight: bold;
+  font-size: 1.2em;
+  background: #35a79c; /* lighten($secondary, 15%) */
+  padding: 8px 10px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Transición mejorada */
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background-color: #29867E; /* $secondary */
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+}
+
+/* Clase para la fila seleccionada en la tabla */
+.selected-row {
+  background-color: #e0f0ff !important;
+  outline: 2px solid #29867E;
+}
+
+/***********************************/
+  
+.table {
+  width: 100%;
+  height: calc(100vh - 256px); /**217px suamdndo los otros contenedores**/
+  overflow-y: auto;
+  position: relative;
+  
+  .table_display_header {
+    width: 100%;
+    display: flex;
+    font-size: x-small;
+    padding: 0; // Quitar padding para que coincida con la imagen
+    position: sticky; // Hace que el encabezado sea sticky
+    top: 0; // Se queda pegado en la parte superior
+    z-index: 10; // Asegura que esté por encima de otros elementos
+    background: $secondary; // Cambiado a rojo usando la variable $danger
+    .table_display_header_options {
+      color: white;
+
+      text-align: left;
+      padding: 8px 10px;
+      position: relative; // Para posicionar el resizer
+      user-select: none; // Impide selección de texto durante el resize
+      border-right: 1px solid darken($secondary, 10%); // Separador adaptado al nuevo color
+      font-size: 1.2em;
+      // Añadimos el resizer
+      .column-resizer {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 5px;
+        height: 100%;
+        background-color: rgba(0,0,0,0.1);
+        cursor: col-resize;
+        z-index: 20;
+        
+        &:hover, &.resizing {
+          background-color: rgba(0,0,0,0.3);
+        }
+      }
+    }
+  }
+  
+  .display_table {
+    width: 100%;
+    
+    .display_table_form {
+      width: 100%;
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; // Importante para controlar anchos de columna
+        
+        .table_form_body {
+          width: 100%;
+          
+          .table_form_row {
+            display: flex;
+            width: 100%;
+            border-bottom: 1px solid #e0e0e0; // Añadir línea separadora
+            
+            .table_form_row_data {
+              font-size: 1.2em;
+              padding: 8px 10px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              border-right: 1px solid #e0e0e0; // Añadir separador vertical
+            }
+          }
+        }
+      }
+    }
+  }
+}
+/***************************/
+
+
+/*******************************/
+
+/* Ajustes de tamaño iniciales para cada columna - Basados en la imagen de referencia */
+}
+/* Primera columna (Código) */
+.table_display_header_options:nth-child(1),
+.table_form_row .table_form_row_data:nth-child(1) {
+  flex: none;
+  width: 180px; // Ancho fijo basado en la imagen
+  min-width: 120px; // Ancho mínimo
+
+
+}
+
+/* Segunda columna (Producto) */
+.table_display_header_options:nth-child(2),
+.table_form_row .table_form_row_data:nth-child(2) {
+  text-align: left;
+  flex: 1; /* Que ocupe el espacio restante */
+  min-width: 250px; // Ancho mínimo
+}
+
+/* Tercera columna (Precio) */
+.table_display_header_options:nth-child(3),
+.table_form_row .table_form_row_data:nth-child(3) {
+  flex: none;
+  width: 120px; // Ancho fijo basado en la imagen
+  text-align: right; // Alineación a la derecha para valores monetarios
+  min-width: 80px; // Ancho mínimo
+}
+
+/* Cuarta columna (Cantidad) */
+.table_display_header_options:nth-child(4),
+.table_form_row .table_form_row_data:nth-child(4) {
+  flex: none;
+  width: 100px; // Ancho fijo basado en la imagen
+  text-align: center; // Centrado para números
+  min-width: 60px; // Ancho mínimo
+}
+
+/* Quinta columna (Subtotal) */
+.table_display_header_options:nth-child(5),
+.table_form_row .table_form_row_data:nth-child(5) {
+  flex: none;
+  width: 120px; // Ancho fijo basado en la imagen
+  text-align: right; // Alineación a la derecha para valores monetarios
+  min-width: 80px; // Ancho mínimo
+}
+
+/* Sexta columna (Existencia) */
+.table_display_header_options:nth-child(6),
+.table_form_row .table_form_row_data:nth-child(6) {
+  flex: none;
+  width: 100px; // Ancho fijo basado en la imagen
+  text-align: center; // Centrado para números
+  min-width: 60px; // Ancho mínimo
+}
+
+/* Séptima columna (Descuento) */
+.table_display_header_options:nth-child(7),
+.table_form_row .table_form_row_data:nth-child(7) {
+  flex: none;
+  width: 125px; // Ancho fijo basado en la imagen
+  text-align: right; // Alineación a la derecha para porcentajes
+  min-width: 80px; // Ancho mínimo
+}
+/**********************************************************/
+/* Octava columna (Acción) */
+.table_display_header_options:nth-child(8),
+.table_form_row .table_form_row_data:nth-child(8) {
+  flex: none;
+  width: 60px; // Ancho fijo para la columna de acción
+  text-align: center; // Centrado para botones
+  min-width: 50px; // Ancho mínimo
+}
+
+/* Estilos para los inputs en la tabla de productos */
+.price-input, .quantity-input {
+  width: 90%;
+  border: 1px solid lighten($terciary, 40%);
+  padding: 4px;
+  text-align: right;
+  border-radius: 3px;
+  background: white;
+  color: $font-color;
+  
+  &:focus {
+    outline: none;
+    border-color: $secondary;
+    box-shadow: 0 0 3px rgba($secondary, 0.5);
+  }
+}
+
+.quantity-input {
+  text-align: center;
+}
+
+/* Estilo para botón eliminar */
+.delete-btn {
+  background-color: $danger;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background-color: darken($danger, 10%);
+    transform: scale(1.1);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*******************************************************/
+
+
+.bottom_bar{
+    width: 100%;
+  height: 100px;
+  background: lighten($terciary,75%);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+
+  .bottom_options{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: left;
+    justify-content: center;
+    align-items: center;
+    flex: 3;
+    height: 100%;
+
+
+    .bottom_options_main{
+      vertical-align: center;
+      text-align: center;
+      background: $secondary;
+      color: white;
+      height: 100%;
+      position: relative;
+      z-index: 10;
+      font-size:large;
+      &::before{
+        content: "";
+        width: 0%;
+        height: 100%;
+        background: $danger;
+        top:0;
+        left: 0;
+        position: absolute;
+        z-index: -1;
+        transition: .2s;
+      }
+      &:hover::before{
+        transition: .2s;
+        width: 100%;
+
+      }
+      &:hover{
+        transition: .2s;
+        background: transparent;
+      }
+    }  
+
+    .form_ticket{
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      justify-content: center;
+      align-items: center;
+      input{
+        all: unset;
+        background: lighten($secondary,  12%);
+        padding: 0 1em;
+        width: 100%;
+        height: 100%;
+        color: white;
+        font-size: large;
+        &::placeholder{
+          transition: .3s;
+          color: white;
+        }
+        &:focus{
+          transition: .2s;
+          background-color: white; // O el color que prefieras cuando está activo
+          color: $font-color;
+          border-left: 3px solid $secondary; // Opcional: un indicador visual adicional
+          transition: background-color 0.2s, color 0.3s; // Transición suave entre estados
+        }
+      }
+
+  }
+
+
+  }
+
+  .bottom_complete_sale{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 100%;
+
+    flex: .5;
+
+    .complete_sale_button{
+      height: 100%;
+      width: 100%;
+      vertical-align: center;
+      text-align: center;
+      background: $secondary;
+      font-size: x-large;
+      color: white;
+      transition: .2s;
+      position: relative;
+      z-index: 10;
+      
+
+      &::before{
+        content: "";
+        width: 0%;
+        height: 100%;
+        background: $danger;
+        top:0;
+        left: 0;
+        position: absolute;
+        z-index: -1;
+        transition: .2s;
+      }
+      &:hover::before{
+        transition: .2s;
+        width: 100%;
+
+      }
+      &:hover{
+        transition: .2s;
+        background: transparent;
+      }
+
+    }
+  }
+  
+  .total_display{
+    padding:0 .5em;
+    flex: 1;
+    text-align: left;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    flex-direction: column;
+    .total_display_subtotal{
+      font-size: x-large;
+      color: Blue;
+    }
+    .total_display_total{
+      color: red;
+      font-size: xxx-large;      
+      font-weight: thin;
+
+    }
+  }
+}
